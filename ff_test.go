@@ -370,6 +370,15 @@ func TestInfo(t *testing.T) {
             "tags": { "rotate": "180" },
             "side_data_list": [{ "rotation": -180 }]
         },
+        {
+            "codec_type": "video",
+            "tags": { "rotate": "180" },
+            "side_data_list": [{ "rotation": 180 }]
+        },
+        {
+            "codec_type": "video",
+            "tags": { "rotate": "180" }
+        },
         { "codec_type": "audio" }]}`
 
 	var info *ff.ProbeInfo
@@ -381,10 +390,16 @@ func TestInfo(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 
+	Convey("ff.NewInfo(string) with invalid input should return err", t, func() {
+		bad, err := ff.NewInfo("{adsf")
+		So(bad, ShouldBeNil)
+		So(err, ShouldNotBeNil)
+	})
+
 	Convey("ff.Info.FilterStreams(ff.StreamType) (given test data)", t, func() {
-		Convey("There should be 2 video streams", func() {
+		Convey("There should be 4 video streams", func() {
 			vstreams := info.FilterStreams(ff.VideoStream)
-			So(len(vstreams), ShouldEqual, 2)
+			So(len(vstreams), ShouldEqual, 4)
 		})
 		Convey("There should be 1 audio stream", func() {
 			astreams := info.FilterStreams(ff.AudioStream)
@@ -394,6 +409,9 @@ func TestInfo(t *testing.T) {
 	Convey("Video stream rotation", t, func() {
 		vstream1 := info.FilterStreams(ff.VideoStream)[0]
 		vstream2 := info.FilterStreams(ff.VideoStream)[1]
+		vstream3 := info.FilterStreams(ff.VideoStream)[2]
+		vstream4 := info.FilterStreams(ff.VideoStream)[3]
+		astream := info.FilterStreams(ff.AudioStream)[0]
 		Convey("ff.Stream.IsRotated() should tell if there's rotation", func() {
 			rotated := vstream1.IsRotated()
 			So(rotated, ShouldBeTrue)
@@ -405,6 +423,18 @@ func TestInfo(t *testing.T) {
 		Convey("Second stream should be rotated by 180 degrees", func() {
 			rotation := vstream2.Rotation()
 			So(rotation, ShouldEqual, 180)
+		})
+		Convey("Third stream should be rotated by 180 degrees", func() {
+			rotation := vstream3.Rotation()
+			So(rotation, ShouldEqual, 180)
+		})
+		Convey("Fourth stream should be rotated by 180 degrees", func() {
+			rotation := vstream4.Rotation()
+			So(rotation, ShouldEqual, 180)
+		})
+		Convey("Audio stream should NOT be rotated", func() {
+			rotation := astream.Rotation()
+			So(rotation, ShouldEqual, 0)
 		})
 	})
 }
