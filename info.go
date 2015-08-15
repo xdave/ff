@@ -1,3 +1,6 @@
+// Copyright 2015 Dave Gradwell
+// Under BSD-style license (see LICENSE file)
+
 package ff
 
 import (
