@@ -15,8 +15,8 @@ type Command struct {
 	Outputs []File
 }
 
-// You can pass in only input (for ffprobe)
-// You can pass in one or multiple ouptuts
+// You can pass in only input (for ffprobe).
+// You can pass in one or more outputs.
 // Returns a new Command structure
 func NewCommand(path string, input File, outputs ...File) (cmd *Command, err error) {
 	if path == "" {
@@ -39,7 +39,7 @@ func NewCommand(path string, input File, outputs ...File) (cmd *Command, err err
 	return cmd, nil
 }
 
-// Returns a []string slice of how the ffmpeg/ffprobe call should be represented
+// Returns a []string slice of how a ffmpeg/ffprobe call should be represented.
 // Does not include the command Path before it
 func (c *Command) Slice() (results []string) {
 	results = []string{}

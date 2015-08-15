@@ -10,7 +10,7 @@ type File interface {
 	Slice() []string
 }
 
-// Base structure representing an input file or an output file
+// Base structure representing an input file or an output file.
 // Not meant to be used directly; use InputFile or OutputFile
 type BaseFile struct {
 	Filename string
@@ -50,7 +50,7 @@ func NewInput(filename string, params *ParamSet) File {
 	}
 }
 
-// Represents an input file for ffmpeg/ffprobe
+// Represents an output file for ffmpeg/ffprobe
 type OutputFile struct {
 	BaseFile
 }

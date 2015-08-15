@@ -7,7 +7,7 @@ package ff
 type ParamSet []string
 
 // If no params are passed in, nothing is added.
-// If the Slice() representation of a passed-in param is 0, they won't be added
+// If the Slice() representation of a passed-in param is 0, they won't be added.
 // Always returns a pointer to a new ParamSet, never nil
 func NewParamSet(params ...Param) *ParamSet {
 	items := &ParamSet{}
@@ -15,13 +15,13 @@ func NewParamSet(params ...Param) *ParamSet {
 	return items
 }
 
-// Just runs len() on the slice
+// Just runs len() on the slice.
 func (p *ParamSet) Len() int {
 	return len([]string(*p))
 }
 
-// Contains exactly the same functionality as NewParamSet()
-// Does not return any value
+// Contains exactly the same functionality as NewParamSet().
+// Does not return any value.
 func (p *ParamSet) Add(params ...Param) {
 	for _, param := range params {
 		slice := param.Slice()
@@ -31,7 +31,7 @@ func (p *ParamSet) Add(params ...Param) {
 	}
 }
 
-// Always returns a []string slice, even if empty
+// Always returns a []string slice, even if empty.
 func (p *ParamSet) Slice() []string {
 	return []string(*p)
 }

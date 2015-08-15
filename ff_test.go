@@ -489,25 +489,25 @@ func fakeFailureCommandFunc(name string, arg ...string) ff.CommandInterface {
 	return &fakeCommandFailure{}
 }
 
-func TestProbe(t *testing.T) {
+func TestInfoProbe(t *testing.T) {
 	Convey("Make sure there's a DefaultCommandFunc defined", t, func() {
 		cmd := ff.DefaultCommandFunc("")
 		So(cmd, ShouldNotBeNil)
 		Convey("Swap it out to test Probe()", func() {
-			Convey("Test Probe() and make sure it returns output", func() {
+			Convey("Test Probe()'s success", func() {
 				ff.DefaultCommandFunc = fakeCommandFunc
 				info, err := ff.Probe("test")
 				So(info, ShouldNotBeNil)
 				So(err, ShouldBeNil)
 				So(info.Format.Duration, ShouldEqual, "5.0")
 			})
-			Convey("Again but for error cases", func() {
+			Convey("Test Probe()'s failure for empty command path", func() {
 				ff.DefaultCommandFunc = fakeErrorCommandFunc
 				info, err := ff.Probe("")
 				So(info, ShouldBeNil)
 				So(err, ShouldNotBeNil)
 			})
-			Convey("What", func() {
+			Convey("Test Probe()'s failure for bad OS execution", func() {
 				ff.DefaultCommandFunc = fakeFailureCommandFunc
 				_, err := ff.Probe("test")
 				So(err, ShouldNotBeNil)

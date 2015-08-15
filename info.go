@@ -128,7 +128,7 @@ func (s Stream) IsRotated() bool {
 }
 
 // Gets rotation value of video stream, either from stream side-data, or tags.
-// Returns 0 if it's not rotated, or if we can't figure it out
+// Returns 0 if it's not rotated, or if we can't figure it out.
 func (s Stream) Rotation() int {
 	for _, sdata := range s.SideDataList {
 		return abs(sdata.Rotation)
@@ -161,7 +161,7 @@ func NewInfo(jsonData string) (*ProbeInfo, error) {
 	return info, nil
 }
 
-// Filters out streams of the given StreamType
+// Filters out streams of the given StreamType.
 // Returns a []Stream slice, even if it's empty
 func (info ProbeInfo) FilterStreams(t StreamType) (streams []Stream) {
 	streams = []Stream{}
