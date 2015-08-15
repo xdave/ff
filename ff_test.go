@@ -407,11 +407,11 @@ func TestInfo(t *testing.T) {
 		})
 	})
 	Convey("Video stream rotation", t, func() {
-		vstream1 := info.FilterStreams(ff.VideoStream)[0]
-		vstream2 := info.FilterStreams(ff.VideoStream)[1]
-		vstream3 := info.FilterStreams(ff.VideoStream)[2]
-		vstream4 := info.FilterStreams(ff.VideoStream)[3]
-		astream := info.FilterStreams(ff.AudioStream)[0]
+		vstreams := info.FilterStreams(ff.VideoStream)
+		vstream1 := vstreams[0]
+		vstream2 := vstreams[1]
+		vstream3 := vstreams[2]
+		vstream4 := vstreams[3]
 		Convey("ff.Stream.IsRotated() should tell if there's rotation", func() {
 			rotated := vstream1.IsRotated()
 			So(rotated, ShouldBeTrue)
@@ -432,8 +432,11 @@ func TestInfo(t *testing.T) {
 			rotation := vstream4.Rotation()
 			So(rotation, ShouldEqual, 180)
 		})
+
+		astreams := info.FilterStreams(ff.AudioStream)
+		astream1 := astreams[0]
 		Convey("Audio stream should NOT be rotated", func() {
-			rotation := astream.Rotation()
+			rotation := astream1.Rotation()
 			So(rotation, ShouldEqual, 0)
 		})
 	})
