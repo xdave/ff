@@ -437,6 +437,7 @@ func TestInfo(t *testing.T) {
 		astream1 := astreams[0]
 		Convey("Audio stream should NOT be rotated", func() {
 			rotation := astream1.Rotation()
+			So(astream1.IsRotated(), ShouldBeFalse)
 			So(rotation, ShouldEqual, 0)
 		})
 	})
