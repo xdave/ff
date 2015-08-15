@@ -1,3 +1,7 @@
+// Copyright 2015 Dave Gradwell
+// Under BSD-style license (see LICENSE file)
+
+// Package ff implements an ffmpeg (or ffprobe) command-line parameter builder
 package ff
 
 import (
