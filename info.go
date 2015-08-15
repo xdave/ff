@@ -93,11 +93,11 @@ type Stream struct {
 	LtrtSurmixlev      string      `json:"ltrt_surmixlev"`
 	MaxBitRate         string      `json:"max_bit_rate"`
 	NalLengthSize      string      `json:"nal_length_size"`
-	NbFrames           string      `json:"nb_frames"`
+	NumFrames          string      `json:"nb_frames"`
 	PixFmt             string      `json:"pix_fmt"`
 	Profile            string      `json:"profile"`
 	QuarterSample      string      `json:"quarter_sample"`
-	RFrameRate         string      `json:"r_frame_rate"`
+	FrameRate          string      `json:"r_frame_rate"`
 	Refs               int         `json:"refs"`
 	SampleAspectRatio  string      `json:"sample_aspect_ratio"`
 	SampleFmt          string      `json:"sample_fmt"`
