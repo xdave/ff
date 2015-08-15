@@ -55,7 +55,7 @@ func TestParamSlice(t *testing.T) {
 				param := ff.NewParam(key, testValue)
 				slice := param.Slice()
 				if fmt.Sprintf("%T", key) != "string" {
-					Convey("The len() slice should be < 2", func() {
+					Convey("The len() slice should be less than 2", func() {
 						So(len(slice), ShouldBeLessThan, 2)
 					})
 				} else {
@@ -354,6 +354,57 @@ func TestCommand(t *testing.T) {
 				"-foo", "bar", "-i", filename,
 			}
 			So(slice, ShouldResemble, expected)
+		})
+	})
+}
+
+func TestInfo(t *testing.T) {
+	var testJson = `{
+        "streams": [{
+            "codec_type": "video",
+            "tags": { "rotate": "90" },
+            "side_data_list": [{ "rotation": -90 }]
+        },
+        {
+            "codec_type": "video",
+            "tags": { "rotate": "180" },
+            "side_data_list": [{ "rotation": -180 }]
+        },
+        { "codec_type": "audio" }]}`
+
+	var info *ff.ProbeInfo
+	var err error
+
+	Convey("ff.NewInfo(string) should unmarshal json data", t, func() {
+		info, err = ff.NewInfo(testJson)
+		So(info, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+	})
+
+	Convey("ff.Info.FilterStreams(ff.StreamType) (given test data)", t, func() {
+		Convey("There should be 2 video streams", func() {
+			vstreams := info.FilterStreams(ff.VideoStream)
+			So(len(vstreams), ShouldEqual, 2)
+		})
+		Convey("There should be 1 audio stream", func() {
+			astreams := info.FilterStreams(ff.AudioStream)
+			So(len(astreams), ShouldEqual, 1)
+		})
+	})
+	Convey("Video stream rotation", t, func() {
+		vstream1 := info.FilterStreams(ff.VideoStream)[0]
+		vstream2 := info.FilterStreams(ff.VideoStream)[1]
+		Convey("ff.Stream.IsRotated() should tell if there's rotation", func() {
+			rotated := vstream1.IsRotated()
+			So(rotated, ShouldBeTrue)
+		})
+		Convey("First stream should be rotated by 90 degrees", func() {
+			rotation := vstream1.Rotation()
+			So(rotation, ShouldEqual, 90)
+		})
+		Convey("Second stream should be rotated by 180 degrees", func() {
+			rotation := vstream2.Rotation()
+			So(rotation, ShouldEqual, 180)
 		})
 	})
 }
