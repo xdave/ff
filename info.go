@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+// Quick integer abs function (math package doesn't use ints)
 func abs(num int) int {
 	if num < 0 {
 		return num * -1
@@ -12,8 +13,10 @@ func abs(num int) int {
 	return num
 }
 
+// Represents either Format or Stream tags embedded in the file
 type Tags map[string]interface{}
 
+// Container Format info
 type Format struct {
 	BitRate     string `json:"bit_rate"`
 	Duration    string `json:"duration"`
@@ -28,6 +31,7 @@ type Format struct {
 	Tags        Tags   `json:"tags"`
 }
 
+// Stream disposition
 type Disposition struct {
 	AttachedPic     int `json:"attached_pic"`
 	CleanEffects    int `json:"clean_effects"`
@@ -42,6 +46,7 @@ type Disposition struct {
 	VisualImpaired  int `json:"visual_impaired"`
 }
 
+// Stream side data. More fields may be added later as needed.
 type SideData struct {
 	Displaymatrix string `json:"displaymatrix"`
 	Rotation      int    `json:"rotation"`
@@ -49,6 +54,7 @@ type SideData struct {
 	Type          string `json:"side_data_type"`
 }
 
+// Used for enumerating the CodecType field in Stream
 type StreamType string
 
 const (
@@ -56,6 +62,7 @@ const (
 	AudioStream            = "audio"
 )
 
+// Represents any kind of stream (Audio, Video, etc)
 type Stream struct {
 	AvgFrameRate       string      `json:"avg_frame_rate"`
 	BitRate            string      `json:"bit_rate"`
@@ -112,10 +119,13 @@ type Stream struct {
 	SideDataList       []SideData  `json:"side_data_list"`
 }
 
+// Does what it says.
 func (s Stream) IsRotated() bool {
 	return s.Rotation() != 0
 }
 
+// Gets rotation value of video stream, either from stream side-data, or tags.
+// Returns 0 if it's not rotated, or if we can't figure it out
 func (s Stream) Rotation() int {
 	for _, sdata := range s.SideDataList {
 		return abs(sdata.Rotation)
@@ -138,6 +148,7 @@ type ProbeInfo struct {
 	Streams []Stream `json:"streams"`
 }
 
+// Returns a new ProbeInfo structure from the input JSON
 func NewInfo(jsonData string) (*ProbeInfo, error) {
 	info := new(ProbeInfo)
 	err := json.Unmarshal([]byte(jsonData), info)
@@ -147,6 +158,8 @@ func NewInfo(jsonData string) (*ProbeInfo, error) {
 	return info, nil
 }
 
+// Filters out streams of the given StreamType
+// Returns a []Stream slice, even if it's empty
 func (info ProbeInfo) FilterStreams(t StreamType) (streams []Stream) {
 	streams = []Stream{}
 	for _, stream := range info.Streams {
