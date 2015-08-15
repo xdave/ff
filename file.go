@@ -6,7 +6,7 @@ package ff
 // Interface for either an input file or an output file
 type File interface {
 	Name() string
-	AddParam(Param)
+	AddParam(...Param)
 	Slice() []string
 }
 
@@ -18,8 +18,8 @@ type BaseFile struct {
 }
 
 // Add a parameter to this file
-func (f BaseFile) AddParam(param Param) {
-	f.Params.Add(param)
+func (f BaseFile) AddParam(param ...Param) {
+	f.Params.Add(param...)
 }
 
 // Returns the filename passed into the constructor
