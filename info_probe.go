@@ -4,6 +4,7 @@
 package ff
 
 import (
+	"fmt"
 	"os/exec"
 )
 
@@ -22,6 +23,11 @@ var DefaultCommandFunc CommandFunc = func(name string, arg ...string) CommandInt
 
 // Actually calls ffprobe on a file and returns a ProbeInfo object
 func Probe(path string) (info *ProbeInfo, err error) {
+
+	if len(path) == 0 {
+		return nil, fmt.Errorf("Probe() path cannot be empty")
+	}
+
 	input := NewInput(
 		path,
 		NewParamSet(
@@ -32,16 +38,12 @@ func Probe(path string) (info *ProbeInfo, err error) {
 		),
 	)
 
-	cmdline, err := NewCommand("ffprobe", input)
-	if err != nil {
-		return
-	}
+	cmdline, _ := NewCommand("ffprobe", input)
 
-	var cmd CommandInterface
-	cmd = DefaultCommandFunc(cmdline.Path, cmdline.Slice()...)
+	cmd := DefaultCommandFunc(cmdline.Path, cmdline.Slice()...)
 	out, err := cmd.Output()
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	return NewInfo(string(out))

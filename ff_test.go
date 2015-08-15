@@ -467,8 +467,14 @@ func (c fakeCommand) Output() (fakeOutput []byte, err error) {
 	if c.testValue == "" {
 		return nil, fmt.Errorf("Some error!")
 	}
-	fakeOutput = []byte("{}")
+	fakeOutput = []byte(`{ "format": { "duration": "5.0" } }`)
 	return
+}
+
+type fakeCommandFailure struct{}
+
+func (f fakeCommandFailure) Output() ([]byte, error) {
+	return nil, fmt.Errorf("Fake failure!")
 }
 
 func fakeCommandFunc(name string, arg ...string) ff.CommandInterface {
@@ -477,6 +483,10 @@ func fakeCommandFunc(name string, arg ...string) ff.CommandInterface {
 
 func fakeErrorCommandFunc(name string, arg ...string) ff.CommandInterface {
 	return newFakeCommand("", arg...)
+}
+
+func fakeFailureCommandFunc(name string, arg ...string) ff.CommandInterface {
+	return &fakeCommandFailure{}
 }
 
 func TestProbe(t *testing.T) {
@@ -489,12 +499,19 @@ func TestProbe(t *testing.T) {
 				info, err := ff.Probe("test")
 				So(info, ShouldNotBeNil)
 				So(err, ShouldBeNil)
+				So(info.Format.Duration, ShouldEqual, "5.0")
 			})
 			Convey("Again but for error cases", func() {
 				ff.DefaultCommandFunc = fakeErrorCommandFunc
 				info, err := ff.Probe("")
 				So(info, ShouldBeNil)
 				So(err, ShouldNotBeNil)
+			})
+			Convey("What", func() {
+				ff.DefaultCommandFunc = fakeFailureCommandFunc
+				_, err := ff.Probe("test")
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldContainSubstring, "Fake failure")
 			})
 		})
 	})
