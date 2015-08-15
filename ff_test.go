@@ -304,22 +304,32 @@ func TestCommand(t *testing.T) {
 	path := "ffmpeg"
 
 	Convey("ff.NewCommand()", t, func() {
-		Convey("Cannot call with empty command", func() {
-			_, err := ff.NewCommand("", input, output)
+		Convey("Cannot call with empty command (input only)", func() {
+			cmd, err := ff.NewCommand("", input)
+			So(cmd, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+		})
+		Convey("Cannot call with empty command (input+output)", func() {
+			cmd, err := ff.NewCommand("", input, output)
+			So(cmd, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 		})
 		Convey("Can call with only input", func() {
-			_, err := ff.NewCommand(path, input)
+			cmd, err := ff.NewCommand(path, input)
+			So(cmd, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 		})
 		Convey("Returns error with no input", func() {
-			_, err := ff.NewCommand(path, nil, output)
+			cmd, err := ff.NewCommand(path, nil, output)
+			So(cmd, ShouldBeNil)
 			So(err, ShouldNotBeNil)
-			_, err = ff.NewCommand(path, nil)
+			cmd, err = ff.NewCommand(path, nil)
+			So(cmd, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 		})
 		Convey("Returns error no input or output", func() {
-			_, err := ff.NewCommand(path, nil)
+			cmd, err := ff.NewCommand(path, nil)
+			So(cmd, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 		})
 	})
@@ -439,6 +449,53 @@ func TestInfo(t *testing.T) {
 			rotation := astream1.Rotation()
 			So(astream1.IsRotated(), ShouldBeFalse)
 			So(rotation, ShouldEqual, 0)
+		})
+	})
+}
+
+type fakeCommand struct {
+	testValue string
+}
+
+func newFakeCommand(name string, arg ...string) ff.CommandInterface {
+	return &fakeCommand{
+		testValue: name,
+	}
+}
+
+func (c fakeCommand) Output() (fakeOutput []byte, err error) {
+	if c.testValue == "" {
+		return nil, fmt.Errorf("Some error!")
+	}
+	fakeOutput = []byte("{}")
+	return
+}
+
+func fakeCommandFunc(name string, arg ...string) ff.CommandInterface {
+	return newFakeCommand(name, arg...)
+}
+
+func fakeErrorCommandFunc(name string, arg ...string) ff.CommandInterface {
+	return newFakeCommand("", arg...)
+}
+
+func TestProbe(t *testing.T) {
+	Convey("Make sure there's a DefaultCommandFunc defined", t, func() {
+		cmd := ff.DefaultCommandFunc("")
+		So(cmd, ShouldNotBeNil)
+		Convey("Swap it out to test Probe()", func() {
+			Convey("Test Probe() and make sure it returns output", func() {
+				ff.DefaultCommandFunc = fakeCommandFunc
+				info, err := ff.Probe("test")
+				So(info, ShouldNotBeNil)
+				So(err, ShouldBeNil)
+			})
+			Convey("Again but for error cases", func() {
+				ff.DefaultCommandFunc = fakeErrorCommandFunc
+				info, err := ff.Probe("")
+				So(info, ShouldBeNil)
+				So(err, ShouldNotBeNil)
+			})
 		})
 	})
 }

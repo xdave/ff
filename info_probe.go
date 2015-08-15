@@ -7,6 +7,19 @@ import (
 	"os/exec"
 )
 
+// Used for faking it to test the below function
+type CommandInterface interface {
+	Output() ([]byte, error)
+}
+
+// Used for faking it to test the below function
+type CommandFunc func(string, ...string) CommandInterface
+
+// Used for faking it to test the below function
+var DefaultCommandFunc CommandFunc = func(name string, arg ...string) CommandInterface {
+	return exec.Command(name, arg...)
+}
+
 // Actually calls ffprobe on a file and returns a ProbeInfo object
 func Probe(path string) (info *ProbeInfo, err error) {
 	input := NewInput(
@@ -21,18 +34,15 @@ func Probe(path string) (info *ProbeInfo, err error) {
 
 	cmdline, err := NewCommand("ffprobe", input)
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	out, err := exec.Command(cmdline.Path, cmdline.Slice()...).Output()
+	var cmd CommandInterface
+	cmd = DefaultCommandFunc(cmdline.Path, cmdline.Slice()...)
+	out, err := cmd.Output()
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	info, err = NewInfo(string(out))
-	if err != nil {
-		return nil, err
-	}
-
-	return info, nil
+	return NewInfo(string(out))
 }
