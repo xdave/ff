@@ -7,15 +7,15 @@ import (
 	"os/exec"
 )
 
-// Used for faking it to test the below function
+// Used for faking exec.Cmd.Output() to test Probe()
 type CommandInterface interface {
 	Output() ([]byte, error)
 }
 
-// Used for faking it to test the below function
+// Used for faking exec.Command() to test Probe()
 type CommandFunc func(string, ...string) CommandInterface
 
-// Used for faking it to test the below function
+// Used for faking exec.Command() to test Probe()
 var DefaultCommandFunc CommandFunc = func(name string, arg ...string) CommandInterface {
 	return exec.Command(name, arg...)
 }
