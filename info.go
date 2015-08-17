@@ -10,10 +10,10 @@ import (
 
 // Quick integer abs function (math package doesn't use ints)
 func abs(num int) int {
-	if num < 0 {
-		return num * -1
+	if num >= 0 {
+		return num
 	}
-	return num
+	return -num
 }
 
 // Represents either Format or Stream tags embedded in the file
