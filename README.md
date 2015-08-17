@@ -17,7 +17,7 @@ It was written, partially, as an exploration of TDD (Test Driven Development).
 
 *To run the tests in your browser:*
 
-    cd $GOPATH/github.com/xdave/ff
+    cd $GOPATH/src/github.com/xdave/ff
     $GOPATH/bin/goconvey
 (Then, open your browser to the URL given in the output)
 
